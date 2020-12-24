@@ -77,10 +77,10 @@ if __name__ == "__main__":
                         help = 'Type of Model (naive = no vp, VPGNet = w/ VP)')
 
     #Data
-    parser.add_argument('--root_dir', type=str, default='/home/master/09/luben3485/data/VPGNet-DB-5ch',
+    parser.add_argument('--root_dir', type=str, default='../../data/VPGNet-DB-5ch',
                     help='Path of root dir containing data')
     
-    parser.add_argument("--csv_path", type=str, default='/home/master/09/luben3485/data/mat_paths.csv',
+    parser.add_argument("--csv_path", type=str, default='../../data/mat_paths.csv',
                     help='Path of CSV file containing relative paths of imgs')
 
 
@@ -88,15 +88,15 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', type=int, default=1,
                         help='batch_size')
 
-    parser.add_argument('--num_epochs_vp', type=int, default=1,
+    parser.add_argument('--num_epochs_vp', type=int, default=10,
                         help='number of epochs for vp training phase')
     
-    parser.add_argument('--num_epochs_general', type=int, default=1,
+    parser.add_argument('--num_epochs_general', type=int, default=10,
                         help='number of epochs for entire model (after vp phase)')
 
     parser.add_argument("--learning_rate", type=float, default = 1e-4, help='Learning Rate')
 
-    parser.add_argument('--model_path', type=str, default='/home/master/09/luben3485/csie5452-lane-detection/vpgnet-pytorch/vpgnet_weights')
+    parser.add_argument('--model_path', type=str, default='../vpgnet_weights_136_8_10_50')
     
     args = parser.parse_args()
     print(args, end="\n\n")

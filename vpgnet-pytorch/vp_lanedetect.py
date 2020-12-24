@@ -261,12 +261,12 @@ class VP4LaneDetection:
                 self.loss_obj_mask = nn.BCELoss(weight = weights2)
 
                 loss_vp = self.loss_vp(vp_pred, vp)
-                print(obj_mask_pred.size())
-                print(obj_mask.size())
+                #print(obj_mask_pred.size())
+                #print(obj_mask.size())
                 loss_obj_mask = self.loss_obj_mask(obj_mask_pred,obj_mask)
-                print(loss_obj_mask.size())
+                #print(loss_obj_mask.size())
                 a = loss_obj_mask.cpu().detach().numpy()
-                print(a)
+                #print(a)
                 if(batch_number == 0):
                     w1 = 1 / loss_obj_mask.item()
                     w4 = 1 / loss_vp.item()
@@ -308,6 +308,8 @@ class VP4LaneDetection:
                 e + 1, train_loss, train_acc_obj, train_acc_vp_p2, val_obj_mask_loss, val_obj_mask_acc, validation_loss_vp, validation_acc_vp, elapsed)
                 )
             if ((e+1)%5==0):
+                if not os.path.exists(model_path):
+                    os.makedirs(model_path)
                 file_name = 'vpgnet_epoch_' + str(e+1)+'.pth'
                 file_path = os.path.join(os.path.join(model_path, file_name))
                 torch.save(self.model.state_dict(), file_path)
