@@ -101,6 +101,7 @@ class VPGData(Dataset):
         #Slices only the 4th channel (0-indexed) for the obj mask
         obj_mask = img[:, :, 3]
         
+        ''' 
         #Creates binary mask mapping {0,7} -> {0,1}
         f = lambda x: 1 if (x >= 1 and x <=7) else 0
         f_func = np.vectorize(f)
@@ -108,7 +109,34 @@ class VPGData(Dataset):
         #Resize into 120x160 the size of output
         #obj_mask = np.resize(obj_mask, (120,160))
         obj_mask = obj_mask.astype(np.float32)
+        '''
         
+        f = lambda x: 1 if (x == 1) else 0
+        f_func = np.vectorize(f)
+        obj_mask_1 = f_func(obj_mask)
+        obj_mask_1 = obj_mask_1.astype(np.float32)
+        obj_mask_1 = cv2.resize(obj_mask_1, dsize = (160,120),interpolation=cv2.INTER_CUBIC)
+
+        f = lambda x: 1 if (x == 4) else 0
+        f_func = np.vectorize(f)
+        obj_mask_4 = f_func(obj_mask)
+        obj_mask_4 = obj_mask_4.astype(np.float32)
+        obj_mask_4 = cv2.resize(obj_mask_4, dsize = (160,120),interpolation=cv2.INTER_CUBIC)
+
+        f = lambda x: 1 if (x == 6) else 0
+        f_func = np.vectorize(f)
+        obj_mask_6 = f_func(obj_mask)
+        obj_mask_6 = obj_mask_6.astype(np.float32)
+        obj_mask_6 = cv2.resize(obj_mask_6, dsize = (160,120),interpolation=cv2.INTER_CUBIC)
+        
+        obj_mask_all = []
+        obj_mask_all.append(obj_mask_1)
+        obj_mask_all.append(obj_mask_4)
+        obj_mask_all.append(obj_mask_6)
+        obj_mask_all = np.array(obj_mask_all)
+        #print(obj_mask_all)
+        
+        ''' temp
         #grid level annotation
         grid = np.zeros_like(obj_mask)
         for i in range(480):
@@ -132,11 +160,15 @@ class VPGData(Dataset):
                   if i+k+1 < 480  and j+l+1 < 640:
                     grid[i+k+1][j+l+1] = 1
         obj_mask = grid
+        '''
+
+
         # obj_mask_copy = obj_mask #temporary copy
         # obj_mask_copy = obj_mask_copy.astype(int)
+        ''' temp
         obj_mask = cv2.resize(obj_mask, dsize = (160,120),interpolation=cv2.INTER_CUBIC)
         obj_mask = obj_mask.astype(int)
-        
+        '''
 
         #Commented out below b/c only one_channel obj_mask
         #Repeating for the second channel which inverts all values in first channel computed above ^
@@ -225,7 +257,9 @@ class VPGData(Dataset):
         #     return rgb_img
         
         tensor_transform = transforms.ToTensor()
-        return rgb_img, tensor_transform(obj_mask), tensor_transform(vp)
+        ### (3,120,160)
+        obj_mask_all = tensor_transform(obj_mask_all).permute(1,2,0)
+        return rgb_img, obj_mask_all, tensor_transform(vp)
 
 
 

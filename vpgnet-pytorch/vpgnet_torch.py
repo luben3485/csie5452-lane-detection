@@ -42,7 +42,7 @@ class VPGNet(nn.Module):
             nn.Conv2d(384, 384, kernel_size=3, stride=1, padding=1),
             nn.ConvTranspose2d(384,256, kernel_size=2, stride=2), 
             nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),
-            nn.ConvTranspose2d(256,1 ,kernel_size=2, stride=2),
+            nn.ConvTranspose2d(256,3 ,kernel_size=2, stride=2),
         )
         self.vp = nn.Sequential(
             #Conv 7
@@ -66,7 +66,7 @@ class VPGNet(nn.Module):
         #Pass through the obj_mask branch 
         obj_mask = torch.sigmoid(self.obj_mask(x))
         # #Reshape into (120,160,2)
-        #obj_mask = obj_mask.view(-1,2,120,160)
+        #obj_mask = obj_mask.view(-1,3,120,160)
 
         #Pass through the vp branch 
         #vp = self.vp(x)

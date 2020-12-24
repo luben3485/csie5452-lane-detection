@@ -1,0 +1,13 @@
+vpgnet-pytorch/phase1_vp_train_acc.npy
+vpgnet-pytorch/phase1_vp_val_acc.npy
+vpgnet-pytorch/phase1_vp_val_loss.npy
+vpgnet-pytorch/phase1loss.npy
+vpgnet-pytorch/phase2_mask_train_acc.npy
+vpgnet-pytorch/phase2_mask_val_acc.npy
+vpgnet-pytorch/phase2_vp_train_acc.npy
+vpgnet-pytorch/phase2_vp_val_acc.npy
+vpgnet-pytorch/phase2loss.npy
+vpgnet_weights/
+vpgnet_weights_136_8_50_50/
+
+

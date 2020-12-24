@@ -49,7 +49,8 @@ class VP4LaneDetection:
             train_dataloader: DataLoader,
             validation_dataloader: DataLoader,
             num_epochs_vp: int,
-            num_epochs_general: int):
+            num_epochs_general: int,
+            model_path):
         """
         Args:
             Train_dataloader: Dataloader for training dataset
@@ -91,7 +92,7 @@ class VP4LaneDetection:
             for batch_number, (rgb_img, obj_mask ,vp) in enumerate(train_dataloader):
                 if batch_number%5 == 0:
                   print("Training Batch: " + str(batch_number) + " / " + str(num_batches))
-
+                    
                 
                 rgb_img = rgb_img.type(torch.FloatTensor)
                 rgb_img = rgb_img.to(device=self.device)
@@ -151,7 +152,6 @@ class VP4LaneDetection:
                 #print(vp_pred.size())
 
                 obj_mask_pred = obj_mask_pred.to(device=self.device)
-
                 vp_pred = vp_pred.to(device=self.device)
 
                 
@@ -208,6 +208,8 @@ class VP4LaneDetection:
             #      e + 1, train_loss, train_vp_acc, elapsed)
             #     )
 
+
+
         phase2_vp_train_acc = []
         phase2_vp_val_acc = []
 
@@ -259,7 +261,12 @@ class VP4LaneDetection:
                 self.loss_obj_mask = nn.BCELoss(weight = weights2)
 
                 loss_vp = self.loss_vp(vp_pred, vp)
+                print(obj_mask_pred.size())
+                print(obj_mask.size())
                 loss_obj_mask = self.loss_obj_mask(obj_mask_pred,obj_mask)
+                print(loss_obj_mask.size())
+                a = loss_obj_mask.cpu().detach().numpy()
+                print(a)
                 if(batch_number == 0):
                     w1 = 1 / loss_obj_mask.item()
                     w4 = 1 / loss_vp.item()
@@ -300,7 +307,11 @@ class VP4LaneDetection:
                 "General Training: Epoch {:d} Train loss: {:.2f}. Train Accuracy Obj Mask: {:.2f}. Train Accuracy VP: {:.2f}. Validation loss OBJ: {:.2f}. Validation Accuracy OBJ: {:.2f}. Validation Loss VP: {:.2f}. Validation Accuracy VP: {:.2f}. Elapsed time: {:.2f}ms. \n".format(
                 e + 1, train_loss, train_acc_obj, train_acc_vp_p2, val_obj_mask_loss, val_obj_mask_acc, validation_loss_vp, validation_acc_vp, elapsed)
                 )
-            
+            if ((e+1)%5==0):
+                file_name = 'vpgnet_epoch_' + str(e+1)+'.pth'
+                file_path = os.path.join(os.path.join(model_path, file_name))
+                torch.save(self.model.state_dict(), file_path)
+                print('save model in'+ file_path)
         
         np.save("phase1loss.npy",np.array(vp_phase_train_loss))
         np.save("phase1_vp_train_acc.npy",np.array(vp_phase_train_acc))

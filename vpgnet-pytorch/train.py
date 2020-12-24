@@ -10,8 +10,10 @@ from dataset import VPGData
 #from lanedetect import LaneDetectionHelper
 from torchvision import transforms, utils
 import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 import time
-
+import cv2
+import numpy as np
 def main(args):
 
     transform = transforms.Compose([transforms.ToTensor()])
@@ -19,27 +21,42 @@ def main(args):
     valid_dataset = VPGData(args.root_dir, args.csv_path, transform = transform, split = 'validation')
     train_dataloader = DataLoader(train_dataset, batch_size = args.batch_size, shuffle = True, num_workers = 1)
     valid_dataloader = DataLoader(valid_dataset, batch_size = 1, shuffle = True, num_workers = 1)
-    '''    
-    for batch_number, (rgb_img,obj_mask,vp) in enumerate(valid_dataloader): 
-        print(rgb_img.shape)
-        print(obj_mask.shape)
-        print(vp.shape)
-    '''
+    ''' 
+    for batch_number, (rgb_img,obj_mask,vp) in enumerate(train_dataloader): 
+        #print(rgb_img.shape)
+        #print(obj_mask.shape)
+        #print(vp.shape)
+        obj_mask = obj_mask.cpu().detach().numpy()
+        obj_mask = np.transpose(obj_mask, (0, 2, 3, 1))
+        obj_mask = obj_mask[0,:,:,0].reshape(120,160,1)
+        
+        rgb_img = rgb_img.cpu().detach().numpy()
+        rgb_img = np.transpose(rgb_img, (0, 2, 3, 1))
+        rgb_img = rgb_img[0]
 
+        print(obj_mask.shape)
+        print(obj_mask.nonzero())
+        if batch_number == 5:
+            cv2.imwrite('mask.jpg',obj_mask*255)
+            cv2.imwrite('rgb_img.jpg',rgb_img*255)
+    '''
     '''
     if(args.model == 'naive'):
         model = LaneDetect()
         helper = LaneDetectionHelper(model = model, learning_rate = args.learning_rate)
         helper.train(train_dataloader, valid_dataloader, args.num_epochs_general)
     '''
+
+    
     if(args.model == 'VPGNet'):
         model = VPGNet()
         helper = VP4LaneDetection(model = model, learning_rate = args.learning_rate)
-        helper.train(train_dataloader, valid_dataloader, args.num_epochs_vp, args.num_epochs_general)
+        helper.train(train_dataloader, valid_dataloader, args.num_epochs_vp, args.num_epochs_general, args.model_path)
         
         #save model
-        torch.save(model.state_dict(), os.path.join(args.model_path,'vpgnet.pth'))
+        torch.save(model.state_dict(), os.path.join(args.model_path,'vpgnet_final.pth'))
     helper.test(valid_dataloader)
+    
     
     #test_dataset = VPGData(args.root_dir, args.csv_path, transform = transform, split = 'test')
     #test_dataloader = DataLoader(test_dataset, batch_size = 1, shuffle = True, num_workers = 1)
@@ -60,26 +77,26 @@ if __name__ == "__main__":
                         help = 'Type of Model (naive = no vp, VPGNet = w/ VP)')
 
     #Data
-    parser.add_argument('--root_dir', type=str, default='/home/luben/CSIE5452_FinalProj/dataset/VPGNet-DB-5ch',
+    parser.add_argument('--root_dir', type=str, default='/home/master/09/luben3485/data/VPGNet-DB-5ch',
                     help='Path of root dir containing data')
     
-    parser.add_argument("--csv_path", type=str, default='/home/luben/CSIE5452_FinalProj/dataset/mat_paths.csv',
+    parser.add_argument("--csv_path", type=str, default='/home/master/09/luben3485/data/mat_paths.csv',
                     help='Path of CSV file containing relative paths of imgs')
 
 
     # Model
-    parser.add_argument('--batch_size', type=int, default=8,
+    parser.add_argument('--batch_size', type=int, default=1,
                         help='batch_size')
 
-    parser.add_argument('--num_epochs_vp', type=int, default=5,
+    parser.add_argument('--num_epochs_vp', type=int, default=1,
                         help='number of epochs for vp training phase')
     
-    parser.add_argument('--num_epochs_general', type=int, default=5,
+    parser.add_argument('--num_epochs_general', type=int, default=1,
                         help='number of epochs for entire model (after vp phase)')
 
     parser.add_argument("--learning_rate", type=float, default = 1e-4, help='Learning Rate')
 
-    parser.add_argument('--model_path', type=str, default='/home/luben/CSIE5452_FinalProj/vpgnet-pytorch/torch/vpgnet_weights')
+    parser.add_argument('--model_path', type=str, default='/home/master/09/luben3485/csie5452-lane-detection/vpgnet-pytorch/vpgnet_weights')
     
     args = parser.parse_args()
     print(args, end="\n\n")

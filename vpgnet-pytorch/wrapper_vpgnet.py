@@ -56,7 +56,6 @@ class WrapperVPGNet:
         # 车道线
         #obj_mask_pred_160x120 = (obj_mask_pred_160x120 >= config.tricks_vpgnet_confidence_mask_pred).int()
         obj_mask_pred_160x120 = obj_mask_pred_160x120.cpu().detach().numpy()
-
         # # vp
         # vp_pred = (vp_pred > 0.9).float()
         # vp_pred = vp_pred.cpu().detach().numpy()
