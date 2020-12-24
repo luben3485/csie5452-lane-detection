@@ -1,8 +1,8 @@
 import os
 import pandas as pd
 
-data_root_dir = '/home/master/09/luben3485/data/VPGNet-DB-5ch'
-csv_save_dir = '/home/master/09/luben3485/data'
+data_root_dir = '../../data/VPGNet-DB-5ch'
+csv_save_dir = '../../data'
 
 listOfFiles = list()
 for (dirpath, dirnames, filenames) in os.walk(data_root_dir):
