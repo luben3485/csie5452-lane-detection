@@ -51,19 +51,19 @@ class WrapperVPGNet:
 
         image_obj = image_obj.view((1, 3, 480, 640))
         image_obj = image_obj.to(device=self.device)
-        obj_mask_pred_160x120, _ = self.model(image_obj)
+        obj_mask_pred_160x120, vp_pred = self.model(image_obj)
 
         # 车道线
         #obj_mask_pred_160x120 = (obj_mask_pred_160x120 >= config.tricks_vpgnet_confidence_mask_pred).int()
         obj_mask_pred_160x120 = obj_mask_pred_160x120.cpu().detach().numpy()
-        # # vp
-        # vp_pred = (vp_pred > 0.9).float()
-        # vp_pred = vp_pred.cpu().detach().numpy()
-        # vp_sum = vp_pred[0, 0, :, :] + vp_pred[0, 1, :, :] + vp_pred[0, 2, :, :] + vp_pred[0, 3, :, :]
-        # # --------------------------时间测试--------------------------
+        # vp
+        vp_pred = (vp_pred > 0.9).float()
+        vp_pred = vp_pred.cpu().detach().numpy()
+        vp_sum = vp_pred[0, 0, :, :] + vp_pred[0, 1, :, :] + vp_pred[0, 2, :, :] + vp_pred[0, 3, :, :]
+        
         # # 识别结束时间
         # if config.print_running_time:
         #     print('车道线用时: ' + str(datetime.datetime.now() - start1) + ', ', end='')
         # # --------------------------时间测试--------------------------
         # return obj_mask_pred[0, 0, :, :], obj_mask_pred[0, 1, :, :], obj_mask_pred[0, 2, :, :]
-        return obj_mask_pred_160x120[0, :, :, :]
+        return obj_mask_pred_160x120[0, :, :, :], vp_sum
