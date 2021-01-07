@@ -42,7 +42,7 @@ class VPGNet(nn.Module):
             nn.Conv2d(384, 384, kernel_size=3, stride=1, padding=1),
             nn.ConvTranspose2d(384,256, kernel_size=2, stride=2), 
             nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),
-            nn.ConvTranspose2d(256, 4,kernel_size=2, stride=2),
+            nn.ConvTranspose2d(256, 6,kernel_size=2, stride=2),
         )
         self.vp = nn.Sequential(
             #Conv 7

@@ -159,7 +159,13 @@ class Yolov3():
 
                 # Save results (image with detections)
 
-        return im0, bbox_array, label_list
+        confidence = []
+        label_name = []
+        for label in label_list:
+            split_label = label.split(' ')
+            confidence.append(float(split_label[-1]))
+            label_name.append(split_label[0])
+        return im0, bbox_array, confidence, label_name
 
 if __name__ == '__main__':
     _img = cv2.imread('/home/chaco/Desktop/car2/yolov3/data/images/scene002.jpg')
